@@ -16,7 +16,8 @@ finally { $taskIcon.Dispose() }
 $taskStage = Join-Path $taskRoot ('artifacts/thunderstore/stage-' + [Guid]::NewGuid().ToString('N'))
 $taskPlugins = Join-Path $taskStage 'BepInEx/plugins/CombatMeter'
 New-Item -ItemType Directory -Force -Path $taskPlugins | Out-Null
-foreach ($taskName in @('manifest.json', 'README.md', 'CHANGELOG.md', 'icon.png')) {
+Copy-Item -LiteralPath (Join-Path $taskRoot 'README.md') -Destination $taskStage
+foreach ($taskName in @('manifest.json', 'CHANGELOG.md', 'icon.png')) {
     Copy-Item -LiteralPath (Join-Path $taskMetadata $taskName) -Destination $taskStage
 }
 foreach ($taskName in @('Client', 'Server', 'Core', 'Shared', 'Runtime')) {

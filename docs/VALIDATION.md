@@ -1,3 +1,14 @@
+# Built-in transport: 0.2.0 / protocol 4 (2026-10-19)
+
+- Release and Debug builds pass; 55 automated tests pass. Wire tests cover single-frame requests, fragmented/reordered details, duplicate rejection, connection-channel isolation, direction validation, malformed framing, transfer expiry, reset, decompression limits, oversized packets, and 32-player snapshots/full 128-source details.
+- Removed all Emberglass assembly references and plugin dependencies. Bootstrap, isolated-profile setup, and installers no longer download or install it. Existing third-party installs are preserved by installation scripts.
+- The isolated server loaded Runtime and Server 0.1.7 with Emberglass absent and reached the native collector tick. A temporary validation plugin created a reserved directed-message event with a native connected-user identity. The permanent ChatMessageSystem prefix delivered it exactly once and destroyed the event before chat routing. Native prefab catalog: 14,481 entries. This synthetic test does not demonstrate delivery over a real connection.
+- Evidence: `artifacts/validation/native-transport-20261019/server.log`, `Unity.log`, and temporary probe source. The probe plugin was removed after testing; the isolated process was stopped.
+- Default development profile updated with Debug 0.1.7; stable-library receipt refreshed. Its manual Emberglass DLL was renamed to `Emberglass.dll.disabled` after checking installed plugin assembly references. No other installed plugin referenced Emberglass. The file can be restored if another mod needs it.
+- Live validation during 0.1.7 development: initial readiness checks missed Client_0 and relied on server-side User.IsConnected. The replacement queries the actual LocalUser/User/NetworkId entity in any created world. Logs confirm protocol 4 registration, accepted policy, a populated encounter packet, and an available source response. The user confirmed tracking works and provided HUD/detail screenshots. Repeated client hot reloads re-registered against the same server session without Emberglass.
+- 0.2.0 is a testing-phase release of this implementation. Reconnect, normal-chat compatibility, two-player behavior, contest lifecycle, and large real-game fights still require broader validation. Earlier Emberglass tests do not validate these remaining paths.
+
+## Earlier validation record
 # Validation record and release gate
 
 Development build 0.1.6, October 4, 2026. This document distinguishes automated and native probe evidence from interactive game validation. Unchecked items have not been validated and block a production-ready release.

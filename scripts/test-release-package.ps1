@@ -7,7 +7,7 @@ $taskVersion = (Get-Content (Join-Path $taskRoot 'thunderstore/manifest.json') -
 $taskFixture = Join-Path ([IO.Path]::GetTempPath()) ('combatmeter-release-test-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $taskFixture | Out-Null
 try {
-    $taskSourceFiles = @('Directory.Build.props','docs/versions.json','src/CombatMeter.Client/Plugin.cs','src/CombatMeter.Server/Plugin.cs','src/CombatMeter.Runtime/RuntimeHost.cs','src/CombatMeter.Shared/Contracts.cs')
+    $taskSourceFiles = @('README.md','Directory.Build.props','docs/versions.json','src/CombatMeter.Client/Plugin.cs','src/CombatMeter.Server/Plugin.cs','src/CombatMeter.Runtime/RuntimeHost.cs','src/CombatMeter.Shared/Contracts.cs')
     foreach ($taskFile in $taskSourceFiles) {
         $taskTarget = Join-Path $taskFixture $taskFile
         New-Item -ItemType Directory -Path (Split-Path -Parent $taskTarget) -Force | Out-Null
@@ -23,7 +23,8 @@ try {
     $taskArchive = [IO.Compression.ZipFile]::Open($taskZip, [IO.Compression.ZipArchiveMode]::Create)
     try {
         foreach ($taskFile in @('manifest.json','README.md','CHANGELOG.md','icon.png')) {
-            [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($taskArchive, (Join-Path $taskFixture "thunderstore/$taskFile"), $taskFile) | Out-Null
+            $taskMetadataPath = if ($taskFile -ceq 'README.md') { 'README.md' } else { "thunderstore/$taskFile" }
+            [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($taskArchive, (Join-Path $taskFixture $taskMetadataPath), $taskFile) | Out-Null
         }
         foreach ($taskKind in @('Client','Server','Core','Shared','Runtime')) {
             [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($taskArchive, (Join-Path $taskRoot "src/CombatMeter.$taskKind/bin/Release/net6.0/CombatMeter.$taskKind.dll"), "BepInEx/plugins/CombatMeter/CombatMeter.$taskKind.dll") | Out-Null
@@ -44,9 +45,9 @@ try {
     Write-TestRecord ('0' * 40)
     Assert-Rejected 'wrong source commit'
     Write-TestRecord $taskCommit
-    Add-Content (Join-Path $taskFixture 'thunderstore/README.md') 'Unpackaged modification'
+    Add-Content (Join-Path $taskFixture 'README.md') 'Unpackaged modification'
     Assert-Rejected 'README differs from source'
-    Copy-Item -LiteralPath (Join-Path $taskRoot 'thunderstore/README.md') -Destination (Join-Path $taskFixture 'thunderstore/README.md') -Force
+    Copy-Item -LiteralPath (Join-Path $taskRoot 'README.md') -Destination (Join-Path $taskFixture 'README.md') -Force
     $taskArchive = [IO.Compression.ZipFile]::Open($taskZip, [IO.Compression.ZipArchiveMode]::Update)
     try { $taskArchive.CreateEntry('../unexpected.txt') | Out-Null } finally { $taskArchive.Dispose() }
     Write-TestRecord $taskCommit

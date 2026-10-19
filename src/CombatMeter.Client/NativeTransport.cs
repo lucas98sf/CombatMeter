@@ -2,7 +2,6 @@ using CombatMeter.Shared;
 using CombatMeter.Runtime;
 using ProjectM;
 using ProjectM.Network;
-using Unity.Collections;
 using Unity.Entities;
 
 namespace CombatMeter.Client;
@@ -18,8 +17,11 @@ internal sealed class NativeTransport : IDisposable
     private Entity _user;
     private string _channel = Guid.NewGuid().ToString("N");
     private long _serial;
+    private double _nextSearch;
+    private bool _receivedEncounter, _receivedSources;
     public bool IsReady => _world is { IsCreated: true } && _world.EntityManager.Exists(_user)
-        && _world.EntityManager.GetComponentData<User>(_user).IsConnected;
+        && _world.EntityManager.HasComponent<User>(_user)
+        && _world.EntityManager.HasComponent<NetworkId>(_user);
 
     public NativeTransport(Action<PolicyPacket> policy, Action<EncounterPacket> encounter, Action<SourceResponsePacket> sources, Action ready)
     {
@@ -30,18 +32,32 @@ internal sealed class NativeTransport : IDisposable
     {
         if (IsReady) return false;
         if (_world != null) { _world = null; _user = Entity.Null; _channel = Guid.NewGuid().ToString("N"); _serial = 0; _inbox.Clear(); }
+        if (now < _nextSearch) return false;
+        _nextSearch = now + 1;
         foreach (var world in World.s_AllWorlds)
         {
-            if (!world.IsCreated || !world.Name.Equals("Client", StringComparison.OrdinalIgnoreCase)) continue;
-            var query = world.EntityManager.CreateEntityQuery(new ComponentType[] { ComponentType.ReadOnly<LocalUser>(), ComponentType.ReadOnly<User>() });
+            // World names can include a numeric suffix. Native local-player data
+            // identifies the active client world without depending on its name.
+            if (!world.IsCreated) continue;
+            // User.IsConnected is server-side state. Query the actual local user
+            // entity; the interop ref-return LocalUser accessor is not reliable here.
+            var users = world.EntityManager.CreateEntityQuery(new ComponentType[] {
+                ComponentType.ReadOnly<LocalUser>(), ComponentType.ReadOnly<User>(), ComponentType.ReadOnly<NetworkId>() });
             try
             {
-                if (query.CalculateEntityCount() != 1) continue;
-                var user = query.GetSingletonEntity();
-                if (!world.EntityManager.GetComponentData<User>(user).IsConnected) continue;
-                _world = world; _user = user; _ready(); return true;
+                if (users.CalculateEntityCount() == 1)
+                {
+                    var candidate = users.GetSingletonEntity();
+                    _world = world; _user = candidate;
+                    if (IsReady)
+                    {
+                        Plugin.Instance.Log.LogInfo($"[CombatMeter:Transport] local user ready in {world.Name}");
+                        _ready(); return true;
+                    }
+                    _world = null;
+                }
             }
-            finally { query.Dispose(); }
+            finally { users.Dispose(); }
         }
         return false;
     }
@@ -52,8 +68,12 @@ internal sealed class NativeTransport : IDisposable
         switch (packet)
         {
             case PolicyPacket policy: _policy(policy); break;
-            case EncounterPacket encounter: _encounter(encounter); break;
-            case SourceResponsePacket sources: _sources(sources); break;
+            case EncounterPacket encounter:
+                if (!_receivedEncounter) Plugin.Instance.Log.LogInfo($"[CombatMeter:Transport] first encounter received; players={encounter.Encounter.Players.Length}; creatures={encounter.Encounter.Creatures.Length}");
+                _receivedEncounter = true; _encounter(encounter); break;
+            case SourceResponsePacket sources:
+                if (!_receivedSources) Plugin.Instance.Log.LogInfo($"[CombatMeter:Transport] first source response received; available={sources.Available}; sources={sources.Sources.Length}");
+                _receivedSources = true; _sources(sources); break;
         }
     }
     private void Send<T>(T packet)

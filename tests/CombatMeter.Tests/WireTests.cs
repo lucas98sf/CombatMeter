@@ -78,4 +78,23 @@ public class WireTests
         foreach (var frame in frames) Assert.Null(new WireInbox().Receive(frame, null, true, 0, out _));
         Assert.Throws<InvalidDataException>(() => WireCodec.Encode(Channel, 2, new PolicyPacket { Reason = new string('x', WireCodec.MaxJsonBytes + 1) }).ToArray());
     }
+    [Fact]
+    public void ThirtyTwoPlayerSnapshotsAndFullSourceListsRemainBounded()
+    {
+        var random = new Random(42);
+        var snapshot = new EncounterPacket { ServerSessionId = Guid.NewGuid().ToString("N"), Encounter = new() {
+            Id = Guid.NewGuid().ToString("N"), Sequence = 42, DurationSeconds = 123.456,
+            Players = Enumerable.Range(1, 32).Select(i => new PlayerTotals { PlayerId = (ulong)i,
+                Name = "Player " + i, Damage = random.NextDouble() * 1e6, BossDamage = random.NextDouble() * 1e5 }).ToArray() } };
+        var frames = WireCodec.Encode(Channel, 1, snapshot).ToArray();
+        var inbox = new WireInbox(); object? result = null;
+        foreach (var frame in frames) result = inbox.Receive(frame, Channel, false, 0, out _) ?? result;
+        Assert.Equal(snapshot.Encounter.Players.Select(x => x.Damage), Assert.IsType<EncounterPacket>(result).Encounter.Players.Select(x => x.Damage));
+        var details = new SourceResponsePacket { Sources = Enumerable.Range(1, 128).Select(i => new SourceTotals {
+            Id = "Ability:" + i, Name = "Damage-producing ability " + i, Damage = random.NextDouble() * 1e6 }).ToArray() };
+        frames = WireCodec.Encode(Channel, 2, details).ToArray(); result = null;
+        foreach (var frame in frames) result = inbox.Receive(frame, Channel, false, 0, out _) ?? result;
+        Assert.Equal(128, Assert.IsType<SourceResponsePacket>(result).Sources.Length);
+        Assert.True(frames.Length <= WireCodec.MaxChunks);
+    }
 }

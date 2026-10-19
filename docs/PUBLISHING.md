@@ -25,7 +25,7 @@ Publish retries accept an already uploaded version only when its downloaded byte
 
 The publishing job uses the GitHub environment **THUNDERSTORE_TOKEN**, with an environment secret also named **THUNDERSTORE_TOKEN** containing the **BiribaMods** Thunderstore service-account token. Manage it in [environment settings](https://github.com/lucas98sf/CombatMeter/settings/environments). Do not commit the token or put it in a command-line argument. The workflow exposes it only to the publishing step as `TCLI_AUTH_TOKEN`; ordinary push/PR CI has no upload credentials.
 
-`thunderstore.toml` selects BiribaMods, CombatMeter, V Rising, and the Client/Server/Mods/Oakveil categories. The ZIP's `thunderstore/README.md` remains the full Thunderstore page text; its `manifest.json` links to the [GitHub repository](https://github.com/lucas98sf/CombatMeter).
+`thunderstore.toml` selects BiribaMods, CombatMeter, V Rising, and the Client/Server/Mods/Oakveil categories. The root `README.md` is the single source for both GitHub and the Thunderstore page; its `manifest.json` links to the [GitHub repository](https://github.com/lucas98sf/CombatMeter).
 
 The public package contains both process-filtered plugins and Core, Shared, and Runtime. Networking is built into CombatMeter; Emberglass is not required. ServerLaunchFix is optional for dedicated servers and required for local hosting, so it is documented rather than forced as a dependency.
 
@@ -38,7 +38,7 @@ From the repository root:
 ./scripts/package-thunderstore.ps1
 ```
 
-Output: `artifacts/CombatMeter-Thunderstore-0.1.7.zip` (the version comes from `docs/versions.json`). This is the Thunderstore upload artifact; the older separate Client/Server ZIPs are manual-install archives without Thunderstore metadata.
+Output: `artifacts/CombatMeter-Thunderstore-0.2.0.zip` (the version comes from `docs/versions.json`). This is the Thunderstore upload artifact; the older separate Client/Server ZIPs are manual-install archives without Thunderstore metadata.
 
 The package script checks matching manifest and assembly versions, the icon dimensions, and root metadata files. A fresh staging directory and explicit DLL list exclude local configurations, logs, game assemblies, SDKs, and hot-reload files. Build before packaging; the package script does not rebuild binaries.
 
@@ -54,3 +54,5 @@ Public metadata, README, changelog, and icon are in `thunderstore/`. `scripts/cr
 The first public build is marked early access. The public README identifies the installed game version and remaining multiplayer/contest validation; see `docs/VALIDATION.md` for the detailed record. The package website links to the public GitHub repository.
 
 For subsequent releases, increase the package and plugin versions together, update the changelog, build/test, and upload under the **same team and package name**. Changes to permanent Runtime/Core/Shared assemblies require a coordinated client/server restart.
+
+The package script copies the root README unchanged, and CI verifies it against the tagged source. Screenshot URLs point to files in this repository, so push the images with the release commit before publishing.

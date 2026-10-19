@@ -71,7 +71,7 @@ Your Thunderstore profile is `%APPDATA%/Thunderstore Mod Manager/DataFolder/VRis
 
 With server `Diagnostics.LogResolvedDamage=true`, inspect:
 
-- Emberglass handshake and CombatMeter registration/policy receipt: confirm the UI connection exists.
+- Native game connection and CombatMeter registration/policy receipt: confirm the UI connection exists.
 - `healthHookCalls`: confirm native resolved-health interception executes.
 - `captured`: confirm negative health operations were measurable.
 - `routed` and `active`: confirm enabled modes and attribution route events to encounters.
@@ -79,8 +79,8 @@ With server `Diagnostics.LogResolvedDamage=true`, inspect:
 
 Before/after health logs show the measured amount and native change value. Compare them with actual health readings for direct hits, mitigated hits, shields, DoTs, overkill, and simultaneous attackers. Turn verbose diagnostics off after verification. Debug compilation does not itself prove that a native Harmony hook is called.
 
-## Native networking in 0.1.7
+## Built-in networking in 0.2.0
 
 Protocol 4 removes Emberglass. Requests travel as private self-directed native messages, and the server sends directed system-message frames only to registered users. Runtime hooks consume the reserved channel before normal chat routing/display. There is no chat CLI or additional network port. Connected FromCharacter.User provides server-side requester identity. Brotli/JSON packets have bounded frame counts, decompression limits, transfer expiry, direction checks, duplicate rejection, and a fresh client channel per connection.
 
-Rebuild both configurations, close the game, and rerun scripts/enable-hot-reload.ps1 once: Runtime/Core/Shared changed. Existing Emberglass installs are left alone in case another mod needs them. For dependency-free validation, disable Emberglass in the test profile before starting it. The native event path still needs a real client/server round trip and normal-chat check before publishing 0.1.7.
+Rebuild both configurations, close the game, and rerun scripts/enable-hot-reload.ps1 once: Runtime/Core/Shared changed. Existing Emberglass installs are left alone in case another mod needs them. For dependency-free validation, disable Emberglass in the test profile before starting it. The local-game client/server round trip, encounter delivery, source replies, and client hot reload were verified during 0.1.7 development. Readiness queries the actual LocalUser entity rather than a fixed world name or the server-side User.IsConnected flag. Broader multiplayer, reconnect, and normal-chat checks remain in the validation record.

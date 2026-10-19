@@ -16,6 +16,7 @@ internal sealed class DamageSourceResolver
     private readonly EntityManager _manager;
     private readonly SourceOriginCache _cache = new();
     private readonly Dictionary<int, string> _names = new();
+    private bool _catalogLoaded;
     public DamageSourceResolver(World world) { _world = world; _manager = world.EntityManager; }
     private static class Component<T> { internal static readonly ComponentType Type = ComponentType.ReadOnly(Il2CppType.Of<T>()); }
     private bool Has<T>(Entity e) => e != Entity.Null && _manager.Exists(e) && _manager.HasComponent(e, Component<T>.Type);
@@ -122,6 +123,17 @@ internal sealed class DamageSourceResolver
     }
     private string RawName(int hash)
     {
+        // The installed game's catalog includes abilities and buffs as well as
+        // units. Prefer its full prefab identity for classification and fallback names.
+        if (!_catalogLoaded)
+        {
+            var collection = _world.GetExistingSystemManaged<PrefabCollectionSystem>();
+            if (collection is not null && collection.SpawnableNameToPrefabGuidDictionary.Count > 0)
+            {
+                foreach (var entry in collection.SpawnableNameToPrefabGuidDictionary) _names[entry.Value.GuidHash] = entry.Key;
+                _catalogLoaded = true;
+            }
+        }
         if (_names.TryGetValue(hash, out var cached)) return cached;
         var prefabs = _world.GetExistingSystemManaged<PrefabCollectionSystem>();
         var metadata = default(ConvertedAssetData);
@@ -130,13 +142,6 @@ internal sealed class DamageSourceResolver
             var assetName = AssetName(metadata);
             if (!string.IsNullOrWhiteSpace(assetName)) { _names[hash] = assetName; return assetName; }
         }
-        if (_names.Count == 0)
-        {
-            var collection = _world.GetExistingSystemManaged<PrefabCollectionSystem>();
-            if (collection is not null)
-                foreach (var entry in collection.SpawnableNameToPrefabGuidDictionary) _names[entry.Value.GuidHash] = entry.Key;
-        }
-        if (_names.TryGetValue(hash, out var name)) return name;
         return _names[hash] = "";
     }
     private static unsafe string AssetName(ConvertedAssetData data)

@@ -6,7 +6,7 @@ namespace = "BiribaMods"
 name = "CombatMeter"
 # The release workflow overrides this from its validated tag.
 versionNumber = "0.0.0"
-description = "Native damage and DPS meter for V Rising."
+description = "TESTING PHASE - not a stable release. In-game damage and DPS meter for V Rising."
 websiteUrl = "https://github.com/lucas98sf/CombatMeter"
 containsNsfwContent = false
 
@@ -15,7 +15,7 @@ BepInEx-BepInExPack_V_Rising = "1.733.2"
 
 [build]
 icon = "./thunderstore/icon.png"
-readme = "./thunderstore/README.md"
+readme = "./README.md"
 outdir = "./artifacts"
 
 [publish]

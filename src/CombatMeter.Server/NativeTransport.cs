@@ -28,8 +28,6 @@ internal sealed class NativeTransport : IDisposable
     {
         _runtime = runtime; _plugin = plugin;
         MessageBridge.ServerReceived += Receive;
-
-
     }
 
     private void Receive(EntityManager manager, Entity senderEntity, string frame)
@@ -108,7 +106,6 @@ internal sealed class NativeTransport : IDisposable
     {
         foreach (var id in _peers.Keys.Where(id => _runtime.FindUser(id) is null).ToArray())
         { _peers.Remove(id); _subscribers.Remove(id); _historyRequested.Remove(id); _detailsRequested.Remove(id); }
-
         var snapshots = _runtime.Tracker.Active(now);
         foreach (var id in _subscribers.ToArray())
         {
@@ -120,7 +117,6 @@ internal sealed class NativeTransport : IDisposable
 
     public void PublishFinal(EncounterSnapshot snapshot, IReadOnlyCollection<ulong> audience)
     {
-
         foreach (var id in _subscribers.ToArray())
         {
             if (!audience.Contains(id)) continue;

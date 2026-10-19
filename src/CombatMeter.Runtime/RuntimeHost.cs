@@ -9,7 +9,7 @@ namespace CombatMeter.Runtime;
 
 // Lives in the ordinary plugins directory. Native function pointers, injected
 // types and Harmony patches must outlive collectible client/server assemblies.
-[BepInPlugin("io.combatmeter.runtime", "CombatMeter Runtime", "0.1.7")]
+[BepInPlugin("io.combatmeter.runtime", "CombatMeter Runtime", "0.2.0")]
 public sealed class RuntimeHost : BasePlugin
 {
     internal static RuntimeHost Instance = null!;

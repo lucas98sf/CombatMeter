@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace CombatMeter.Client;
 
-[BepInPlugin("io.combatmeter.client", "CombatMeter Client", "0.1.7")]
+[BepInPlugin("io.combatmeter.client", "CombatMeter Client", "0.2.0")]
 [BepInProcess("VRising.exe")]
 [BepInDependency("io.combatmeter.runtime")]
 public sealed class Plugin : BasePlugin

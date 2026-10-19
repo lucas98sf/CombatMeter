@@ -67,7 +67,7 @@ internal sealed class SourceVisuals
         {
             foreach (var world in World.s_AllWorlds)
             {
-                if (!world.IsCreated || !world.Name.Equals("Client", StringComparison.OrdinalIgnoreCase)) continue;
+                if (!world.IsCreated || !world.Name.StartsWith("Client", StringComparison.OrdinalIgnoreCase)) continue;
                 var game = world.GetExistingSystemManaged<GameDataSystem>();
                 var registry = game?.ManagedDataRegistry;
                 if (registry is null) continue;

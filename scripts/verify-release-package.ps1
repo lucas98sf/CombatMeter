@@ -24,7 +24,8 @@ try {
         $taskInput = $taskEntry.Open()
         try {
             if ($taskEntry.FullName -notlike '*.dll') {
-                $taskExpected = [IO.File]::ReadAllBytes((Join-Path $taskRoot ('thunderstore/' + $taskEntry.FullName)))
+                $taskMetadataPath = if ($taskEntry.FullName -ceq 'README.md') { 'README.md' } else { 'thunderstore/' + $taskEntry.FullName }
+                $taskExpected = [IO.File]::ReadAllBytes((Join-Path $taskRoot $taskMetadataPath))
                 $taskMemory = New-Object IO.MemoryStream
                 try {
                     $taskInput.CopyTo($taskMemory)
