@@ -1,6 +1,6 @@
 {
   "name": "CombatMeter",
-  "version_number": "0.2.0",
+  "version_number": "0.2.1",
   "website_url": "https://github.com/lucas98sf/CombatMeter",
   "description": "TESTING PHASE - not a stable release. In-game damage and DPS meter with player and enemy rankings, ability breakdowns, and encounter history. Requires server installation.",
   "dependencies": [

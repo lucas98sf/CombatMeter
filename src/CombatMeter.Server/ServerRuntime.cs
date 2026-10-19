@@ -57,7 +57,7 @@ internal sealed class ServerRuntime : IDisposable
     {
         _plugin = plugin;
         foreach (var kind in Enum.GetValues<EncounterKind>())
-            _modes[kind] = plugin.Config.Bind("Tracking", kind.ToString(), kind != EncounterKind.OpenWorld,
+            _modes[kind] = plugin.Config.Bind("Tracking", kind.ToString(), true,
                 "Collect this encounter type. Client visibility settings cannot enable server-disabled tracking.");
         _timeout = plugin.Config.Bind("Tracking", "CombatTimeoutSeconds", 10d,
             new ConfigDescription("Quiet period that ends ordinary PvP/PvE segments. The idle tail is excluded from DPS.", new AcceptableValueRange<double>(1, 120)));

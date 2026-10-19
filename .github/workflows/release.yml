@@ -30,7 +30,7 @@ jobs:
           ref: ${{ inputs.release_tag || github.event.release.tag_name }}
           persist-credentials: false
       - id: policy
-        name: Only stable minor and major versions deploy
+        name: Only published non-prerelease versions deploy
         shell: pwsh
         env:
           RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}

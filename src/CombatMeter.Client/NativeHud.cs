@@ -234,6 +234,8 @@ internal sealed class NativeHud : IDisposable
             var mode = modes[i];
             var button = Button(_review.transform, "", WindowInset + i * 148, 582, 140, 32, () => { _runtime.Modes[mode].Value = !_runtime.Modes[mode].Value; Refresh(); });
             _modeButtons.Add((button.Button, button.Text, mode));
+            _tooltips.Add((button.Button.GetComponent<RectTransform>(), $"{mode} visibility",
+                "Controls display only. If the label says 'server off', tracking is disabled in the server's CombatMeter config. Enable that mode under [Tracking] and restart the server. 'Waiting' means server policy has not arrived yet."));
         }
         Text(_review.transform, "Session history · Drag the unlocked HUD to move it.", WindowInset, 654, ReviewWidth - WindowInset * 2, 24, 13);
         _review.SetActive(false);
@@ -507,6 +509,7 @@ internal sealed class NativeHud : IDisposable
             : $"{selected.Label} · {selected.Players.Length} {(selected.Players.Length == 1 ? "player" : "players")} · {selected.DurationSeconds:N1}s";
         RenderRows(_reviewRows, _reviewContent, selected, ReviewListWidth);
         _enemyLabel.text = _runtime.ShowEnemies.Value ? "Enemies: shown" : "Enemies: hidden";
+        _filterLabel.transform.parent.gameObject.SetActive(selected?.Kind == EncounterKind.Boss);
         _filterLabel.text = _runtime.Filter.Value == BossTargetFilter.BossOnly ? "Targets: boss only" : "Targets: boss + summons";
         _visibleLabel.text = _runtime.Visible.Value ? "HUD: shown" : "HUD: hidden";
         _lockLabel.text = _runtime.Locked.Value ? "Position: locked" : "Position: unlocked";
@@ -530,7 +533,9 @@ internal sealed class NativeHud : IDisposable
         {
             var allowed = _runtime.State.Policy?.EnabledModes.Contains(mode.Kind) == true;
             mode.Button.interactable = allowed;
-            mode.Text.text = allowed ? $"{mode.Kind}: {(_runtime.Modes[mode.Kind].Value ? "on" : "off")}" : $"{mode.Kind}: server off";
+            var name = mode.Kind == EncounterKind.OpenWorld ? "World" : mode.Kind.ToString();
+            mode.Text.text = _runtime.State.Policy is null ? $"{name}: waiting"
+                : allowed ? $"{name}: {(_runtime.Modes[mode.Kind].Value ? "shown" : "hidden")}" : $"{name}: server off";
         }
         RefreshScrollbars();
     }

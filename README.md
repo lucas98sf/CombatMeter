@@ -59,7 +59,7 @@ Configuration files are generated on first launch:
 | `BepInEx/config/io.combatmeter.server.cfg` | Tracking modes and combat timeout |
 | `BepInEx/config/io.combatmeter.client.cfg` | HUD preferences and shortcut |
 
-Bosses, arenas, duels, and ordinary PvP are enabled by default. Open-world PvE is experimental and disabled by default. Restart the server after changing its tracking settings; client preferences cannot enable a mode disabled by the server.
+Bosses, arenas, duels, ordinary PvP, and experimental open-world PvE are enabled by default for new server configs. Existing configs keep their saved settings. Restart the server after changing its tracking settings; client buttons control visibility and show “server off” when recording is disabled by the server.
 
 ## How damage is counted
 

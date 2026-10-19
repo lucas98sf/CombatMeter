@@ -2,9 +2,10 @@
 
 ## Version and deployment policy
 
-- Patch versions (`0.0.1`, `0.1.7`, `1.2.3`) are local builds: no automatic tag, GitHub Release, or Thunderstore upload.
-- Stable minor/major versions ending in `.0` (`0.2.0`, `1.0.0`, `1.3.0`) deploy when their GitHub Release is published.
-- Drafts, prereleases, non-version tags, and `0.0.0` never deploy. The existing public 0.1.6 predates this policy.
+- Published three-part versions, including patches such as `0.2.1`, deploy when their GitHub Release is published.
+- Use patches for fixes and small refinements, minor versions for new features, and major versions for breaking changes. During `0.x` testing, use a new minor version for breaking changes. Change the network protocol version whenever incompatible packet changes require it.
+- Drafts, prereleases, non-version tags, and `0.0.0` never deploy. Publishing remains an explicit action; ordinary commits do not release anything.
+- Every release must be newer than the latest Thunderstore version. Versions must match across metadata and assemblies, and published package bytes cannot be replaced.
 
 ## Automated releases
 
@@ -15,7 +16,7 @@ GitHub Actions cannot build the native plugins from a clean hosted runner withou
 3. Run `./scripts/release.ps1 -Version 0.2.0` (using the intended version).
 4. Review the draft release on [GitHub](https://github.com/lucas98sf/CombatMeter/releases), then publish it. That is the deployment trigger.
 
-For a patch such as `./scripts/release.ps1 -Version 0.1.7`, the script only builds/tests/packages locally. A manually published patch GitHub Release is also skipped by CI.
+For a patch such as `./scripts/release.ps1 -Version 0.2.1`, the same validation and draft-release preparation apply. For local development, run the build and package scripts directly without preparing a release.
 
 The release script attaches the ZIP and a build record containing its version, Git commit, and SHA256. CI checks the tag against source/assembly versions, the build record, the exact permitted ZIP files, and byte-for-byte matching README/manifest/changelog/icon. It then uploads the already verified ZIP with the official TCLI pinned to 0.2.4. All GitHub actions are pinned to commit hashes. CI does not generate a replacement ZIP or silently rewrite versions.
 

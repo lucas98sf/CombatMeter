@@ -1,3 +1,11 @@
+# 0.2.1
+
+- Enable experimental open-world tracking by default for new server configs. Existing saved settings are preserved.
+- Clarify mode visibility buttons with shown/hidden, server-off, and waiting states, plus server-policy guidance.
+- Show the Targets filter only for boss encounters in encounter review; player source details retain their boss-only filter visibility.
+- Allow validated patch releases through the publishing workflow.
+- Testing-phase release. Protocol remains 4; update the package and restart the game/server.
+
 # 0.2.0
 
 - Remove the Emberglass dependency; networking is built into CombatMeter.

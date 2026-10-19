@@ -4,11 +4,10 @@ function Get-ReleasePolicy {
         return [pscustomobject]@{ Version=''; Deploy=$false; Reason='Not a stable three-part version tag.' }
     }
     $taskVersion = $Matches[1]
-    $taskParts = $taskVersion.Split('.')
-    $taskDeploy = !$Prerelease -and $taskParts[2] -eq '0' -and ($taskParts[0] -ne '0' -or $taskParts[1] -ne '0')
+    $taskDeploy = !$Prerelease -and $taskVersion -ne '0.0.0'
     [pscustomobject]@{
         Version=$taskVersion; Deploy=$taskDeploy
-        Reason=if ($taskDeploy) { 'Stable minor/major release.' } else { 'Patch, prerelease, and 0.0.0 builds stay local.' }
+        Reason=if ($taskDeploy) { 'Published three-part version, including patch releases.' } else { 'Prerelease and 0.0.0 builds do not deploy.' }
     }
 }
 

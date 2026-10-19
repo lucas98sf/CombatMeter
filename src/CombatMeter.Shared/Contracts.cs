@@ -22,7 +22,7 @@ public static class Protocol
 public sealed class RegistrationPacket
 {
     public int ProtocolVersion { get; set; } = Protocol.Version;
-    public string ClientVersion { get; set; } = "0.2.0";
+    public string ClientVersion { get; set; } = "0.2.1";
 }
 
 public sealed class HistoryRequestPacket
