@@ -29,7 +29,16 @@ try {
                 $taskMemory = New-Object IO.MemoryStream
                 try {
                     $taskInput.CopyTo($taskMemory)
-                    if ([Convert]::ToBase64String($taskMemory.ToArray()) -cne [Convert]::ToBase64String($taskExpected)) { throw "Packaged metadata differs from tagged source: $($taskEntry.FullName)" }
+                    $taskActual = $taskMemory.ToArray()
+                    if ($taskEntry.FullName -match '\.(md|json)$') {
+                        # Git checkouts may normalize Windows line endings. Verify
+                        # text content without treating CRLF versus LF as a change.
+                        $taskUtf8 = [Text.UTF8Encoding]::new($false, $true)
+                        $taskSame = $taskUtf8.GetString($taskActual).Replace("`r`n", "`n") -ceq $taskUtf8.GetString($taskExpected).Replace("`r`n", "`n")
+                    } else {
+                        $taskSame = [Convert]::ToBase64String($taskActual) -ceq [Convert]::ToBase64String($taskExpected)
+                    }
+                    if (!$taskSame) { throw "Packaged metadata differs from tagged source: $($taskEntry.FullName)" }
                 } finally { $taskMemory.Dispose() }
             } else {
                 # Whitelisted basename only; never extract arbitrary archive paths.

@@ -42,6 +42,10 @@ try {
     }
     Write-TestRecord $taskCommit
     & (Join-Path $PSScriptRoot 'verify-release-package.ps1') -Version $taskVersion -AssetDirectory $taskFixture -SourceRoot $taskFixture
+    $taskReadmePath = Join-Path $taskFixture 'README.md'
+    $taskReadme = [IO.File]::ReadAllText($taskReadmePath).Replace("`r`n", "`n")
+    [IO.File]::WriteAllText($taskReadmePath, $taskReadme.Replace("`n", "`r`n"))
+    & (Join-Path $PSScriptRoot 'verify-release-package.ps1') -Version $taskVersion -AssetDirectory $taskFixture -SourceRoot $taskFixture
     Write-TestRecord ('0' * 40)
     Assert-Rejected 'wrong source commit'
     Write-TestRecord $taskCommit
@@ -52,7 +56,7 @@ try {
     try { $taskArchive.CreateEntry('../unexpected.txt') | Out-Null } finally { $taskArchive.Dispose() }
     Write-TestRecord $taskCommit
     Assert-Rejected 'unexpected/traversing archive entry'
-    Write-Output '4 release package integration checks passed.'
+    Write-Output '5 release package integration checks passed.'
 } finally {
     if ([IO.Path]::GetFullPath($taskFixture).StartsWith([IO.Path]::GetFullPath([IO.Path]::GetTempPath()), [StringComparison]::OrdinalIgnoreCase)) {
         Remove-Item -LiteralPath $taskFixture -Recurse -Force
