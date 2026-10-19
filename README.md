@@ -89,4 +89,7 @@ Generate matching client/server interop assemblies before building. See the [dev
 
 ## Credits
 
-[BepInEx](https://github.com/BepInEx/BepInEx), [ServerLaunchFix](https://thunderstore.io/c/v-rising/p/Mythic/ServerLaunchFix/), and [Eclipse](https://github.com/mfoltz/Eclipse).
+- [BepInEx](https://github.com/BepInEx/BepInEx) provides the plugin loader.
+- [ServerLaunchFix](https://thunderstore.io/c/v-rising/p/Mythic/ServerLaunchFix/) enables server plugins in local private games.
+- [Eclipse](https://github.com/mfoltz/Eclipse) demonstrated integration with the game's existing UI canvases and visual assets.
+- [Emberglass](https://github.com/mfoltz/Emberglass) provided networking for CombatMeter's initial implementation, before it was replaced by built-in networking.
