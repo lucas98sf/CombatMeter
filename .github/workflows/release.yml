@@ -89,13 +89,12 @@ jobs:
         run: |
           if (!$env:TCLI_AUTH_TOKEN) { throw 'Set the repository Actions secret THUNDERSTORE_TOKEN to a BiribaMods Thunderstore service-account token.' }
           $existing = $null
-          try { $existing = Invoke-RestMethod "https://thunderstore.io/api/experimental/package/BiribaMods/CombatMeter/$env:RELEASE_VERSION/" }
+          $expectedUrl = "https://thunderstore.io/package/download/BiribaMods/CombatMeter/$env:RELEASE_VERSION/"
+          try { Invoke-WebRequest $expectedUrl -OutFile artifacts/release/published.zip; $existing = $true }
           catch { if ([int]$_.Exception.Response.StatusCode -ne 404) { throw } }
           $zip = "artifacts/release/CombatMeter-Thunderstore-$env:RELEASE_VERSION.zip"
           if ($existing) {
             # A retry is successful only if the published bytes are this exact artifact.
-            $expectedUrl = "https://thunderstore.io/package/download/BiribaMods/CombatMeter/$env:RELEASE_VERSION/"
-            Invoke-WebRequest $expectedUrl -OutFile artifacts/release/published.zip
             if ((Get-FileHash $zip).Hash -ne (Get-FileHash artifacts/release/published.zip).Hash) { throw 'This version already exists with different bytes. Publish a new version.' }
             'Identical version already published; upload skipped.' >> $env:GITHUB_STEP_SUMMARY
           } else {
@@ -103,7 +102,13 @@ jobs:
             if ([version]$env:RELEASE_VERSION -le [version]$package.latest.version_number) { throw 'Release must be newer than the latest Thunderstore version.' }
             ./.tools/tcli/tcli.exe publish --config-path thunderstore.toml --file $zip
             if ($LASTEXITCODE -ne 0) { throw 'Thunderstore publication failed.' }
-            $published = Invoke-RestMethod "https://thunderstore.io/api/experimental/package/BiribaMods/CombatMeter/$env:RELEASE_VERSION/"
-            if ($published.version_number -ne $env:RELEASE_VERSION) { throw 'Could not verify published version.' }
+            for ($attempt = 0; ; $attempt++) {
+              try { Invoke-WebRequest $expectedUrl -OutFile artifacts/release/published.zip; break }
+              catch {
+                if ($attempt -ge 7 -or [int]$_.Exception.Response.StatusCode -ne 404) { throw }
+                Start-Sleep -Seconds 3
+              }
+            }
+            if ((Get-FileHash $zip).Hash -ne (Get-FileHash artifacts/release/published.zip).Hash) { throw 'Published package bytes do not match the verified release artifact.' }
             "Published CombatMeter $env:RELEASE_VERSION to https://thunderstore.io/c/v-rising/p/BiribaMods/CombatMeter/" >> $env:GITHUB_STEP_SUMMARY
           }
