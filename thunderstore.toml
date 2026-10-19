@@ -1,0 +1,26 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "BiribaMods"
+name = "CombatMeter"
+# The release workflow overrides this from its validated tag.
+versionNumber = "0.0.0"
+description = "Native damage and DPS meter for V Rising."
+websiteUrl = "https://github.com/lucas98sf/CombatMeter"
+containsNsfwContent = false
+
+[package.dependencies]
+BepInEx-BepInExPack_V_Rising = "1.733.2"
+
+[build]
+icon = "./thunderstore/icon.png"
+readme = "./thunderstore/README.md"
+outdir = "./artifacts"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["v-rising"]
+
+[publish.categories]
+v-rising = ["client", "server", "mods", "oakveil-update"]
