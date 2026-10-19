@@ -6,7 +6,7 @@ namespace = "BiribaMods"
 name = "CombatMeter"
 # The release workflow overrides this from its validated tag.
 versionNumber = "0.0.0"
-description = "TESTING PHASE - not a stable release. In-game damage and DPS meter for V Rising."
+description = "In-game damage and DPS meter for V Rising."
 websiteUrl = "https://github.com/lucas98sf/CombatMeter"
 containsNsfwContent = false
 
