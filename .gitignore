@@ -1,0 +1,9 @@
+.tools/
+.cache/
+.profiles/
+artifacts/
+**/bin/
+**/obj/
+TestResults/
+*.user
+*.suo

@@ -1,0 +1,42 @@
+{
+  "combatMeter": "0.1.7",
+  "protocol": 4,
+  "recordedAt": "2026-10-04",
+  "gameVersion": "VRisingServer: v1.1.13.0-r99712-b17 (202605251709)",
+  "unity": "2022.3.58f1",
+  "targetFramework": "net6.0",
+  "sdk": "10.0.401",
+  "runtime": "6.0.7",
+  "loaderPack": "1.733.2",
+  "loaderCommit": "3a12d1810bf4dd5ca1635352ccf5bff5d95f987f",
+  "interop": {
+    "server": {
+      "generatedInIsolatedProfile": true,
+      "projectMsha256": "706CD3D069263F882096F08AB30126A341E371E691DAABB4A968BA61C6A5A822",
+      "gameAssemblysha256": "41BA4EB27C53DD9DC1A3D3337A2C8550B8386421361792EE6AC159EF00FF0AC7"
+    },
+    "client": {
+      "generatedInIsolatedProfile": false,
+      "origin": "Installed Thunderstore profile, active on the target game",
+      "projectMsha256": "441BF7B701F5CED542314440CA47987A2393AEFD30D3E01BD5D3597F62F26313",
+      "gameAssemblysha256": "A23F36D5B5B0E393FB77DC0680A9600016173FEA6C0590BF2634F732862B0A56"
+    }
+  },
+  "validation": {
+    "build": "Passed, zero warnings/errors",
+    "unitTests": "54 passed (Release, 2026-10-19)",
+    "serverLoader": "Passed",
+    "serverCollectorTick": "Passed: native clock available; loaded isolated server; no collector update errors",
+    "clientHandshake": "0.1.7 native transport pending live client/server validation; prior Emberglass evidence applies only to 0.1.6",
+    "nativeCombat": "User confirmed live player damage working on 0.1.2; detailed mitigation and attribution matrix pending",
+    "enemyDamage": "0.1.5 isolated native NPC probe: resolved hits accumulate enemy totals with zero player and unresolved damage; recipient simulated in meter cache",
+    "healthAdapter": "Windows x64 native detour plus original non-Burst stat-change job body; isolated probe remained alive",
+    "ui": "0.1.6 source hover and draggable detail window compiled; native localized names/icons, input, placement, and hot reload require interactive checks.",
+    "twoPlayer": "Not yet tested",
+    "hotReload": "Server: two automatic reloads in one process; native damage captured after reload. Client interactive check pending.",
+    "damageSources": "Native synthetic health probe: sword primary, Chaos Volley projectile normalized to group, and burn debuff; 17 each / 51 total. Real casts and client UI check pending.",
+    "sourceLoad": "32 players / 32000 events; one inspected participant: 20 replies in 10 simulated seconds, 48471 JSON bytes before Emberglass framing."
+  },
+  "bloodpebble": "1.4.2",
+  "transport": "Built-in directed native game messages; bounded Brotli/JSON frames; no extra network port"
+}

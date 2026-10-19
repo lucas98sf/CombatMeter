@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AllowUnsafeBlocks>true</AllowUnsafeBlocks></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../CombatMeter.Core/CombatMeter.Core.csproj" />
+    <Reference Include="$(InteropDirectory)/*.dll"><Private>false</Private></Reference>
+    <Reference Include="$(LoaderDirectory)/*.dll" Exclude="$(LoaderDirectory)/dobby.dll"><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>

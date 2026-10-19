@@ -1,0 +1,9 @@
+{
+  "name": "CombatMeter",
+  "version_number": "0.1.7",
+  "website_url": "https://github.com/lucas98sf/CombatMeter",
+  "description": "Native damage and DPS meter with player and enemy rankings, ability breakdowns, and encounter history. Built-in networking; requires server installation.",
+  "dependencies": [
+    "BepInEx-BepInExPack_V_Rising-1.733.2"
+  ]
+}

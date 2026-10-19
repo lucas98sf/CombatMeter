@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <RestorePackagesPath>$(MSBuildThisFileDirectory).cache/nuget</RestorePackagesPath>
+    <NuGetAudit>false</NuGetAudit>
+    <Version>0.1.7</Version>
+    <GameInstallDirectory Condition="'$(GameInstallDirectory)' == ''">C:\Program Files (x86)\Steam\steamapps\common\VRising</GameInstallDirectory>
+    <InteropDirectory Condition="'$(InteropDirectory)' == ''">$(MSBuildThisFileDirectory).profiles/server/BepInEx/interop</InteropDirectory>
+    <LoaderDirectory>$(MSBuildThisFileDirectory).profiles/server/BepInEx/core</LoaderDirectory>
+  </PropertyGroup>
+</Project>
+
+
