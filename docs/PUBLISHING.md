@@ -23,7 +23,7 @@ Publish retries accept an already uploaded version only when its downloaded byte
 
 ### One-time authentication
 
-Create a **BiribaMods** service-account token in Thunderstore team settings, then save it as the repository Actions secret **THUNDERSTORE_TOKEN** at [GitHub settings](https://github.com/lucas98sf/CombatMeter/settings/secrets/actions). Do not commit the token or put it in a command-line argument. The workflow exposes it only to the publishing step as `TCLI_AUTH_TOKEN`; ordinary push/PR CI has no upload credentials.
+The publishing job uses the GitHub environment **THUNDERSTORE_TOKEN**, with an environment secret also named **THUNDERSTORE_TOKEN** containing the **BiribaMods** Thunderstore service-account token. Manage it in [environment settings](https://github.com/lucas98sf/CombatMeter/settings/environments). Do not commit the token or put it in a command-line argument. The workflow exposes it only to the publishing step as `TCLI_AUTH_TOKEN`; ordinary push/PR CI has no upload credentials.
 
 `thunderstore.toml` selects BiribaMods, CombatMeter, V Rising, and the Client/Server/Mods/Oakveil categories. The ZIP's `thunderstore/README.md` remains the full Thunderstore page text; its `manifest.json` links to the [GitHub repository](https://github.com/lucas98sf/CombatMeter).
 

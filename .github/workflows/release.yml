@@ -39,6 +39,7 @@ jobs:
   publish:
     needs: policy
     if: needs.policy.outputs.deploy == 'true'
+    environment: THUNDERSTORE_TOKEN
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
