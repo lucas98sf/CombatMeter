@@ -56,3 +56,5 @@ The first public build is marked early access. The public README identifies the 
 For subsequent releases, increase the package and plugin versions together, update the changelog, build/test, and upload under the **same team and package name**. Changes to permanent Runtime/Core/Shared assemblies require a coordinated client/server restart.
 
 The package script copies the root README unchanged, and CI verifies it against the tagged source. Screenshot URLs point to files in this repository, so push the images with the release commit before publishing.
+
+To retry a published release with the current publishing workflow, run `gh workflow run release.yml --ref main -f release_tag=v0.2.0` with the intended tag. This checks the existing release's draft/prerelease status and verifies its original assets against its tagged source. It does not move the tag or rebuild the package. TCLI reads the package version from the verified ZIP; `--package-version` cannot be combined with `--file`.

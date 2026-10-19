@@ -3,6 +3,12 @@ name: Release to Thunderstore
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Published release tag to deploy or retry
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -21,17 +27,20 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ inputs.release_tag || github.event.release.tag_name }}
           persist-credentials: false
       - id: policy
         name: Only stable minor and major versions deploy
         shell: pwsh
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-          RELEASE_PRERELEASE: ${{ github.event.release.prerelease }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           . ./scripts/release-policy.ps1
-          $decision = Get-ReleasePolicy -Tag $env:RELEASE_TAG -Prerelease ($env:RELEASE_PRERELEASE -eq 'true')
+          $release = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json tagName,isDraft,isPrerelease | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or !$release) { throw 'Release must already exist.' }
+          if ($release.isDraft) { throw 'Draft releases cannot deploy.' }
+          $decision = Get-ReleasePolicy -Tag $release.tagName -Prerelease $release.isPrerelease
           "deploy=$($decision.Deploy.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
           "version=$($decision.Version)" >> $env:GITHUB_OUTPUT
           $decision.Reason >> $env:GITHUB_STEP_SUMMARY
@@ -45,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ inputs.release_tag || github.event.release.tag_name }}
           persist-credentials: false
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
@@ -60,7 +69,7 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
           RELEASE_VERSION: ${{ needs.policy.outputs.version }}
         run: |
           New-Item -ItemType Directory -Path artifacts/release -Force | Out-Null
@@ -92,7 +101,7 @@ jobs:
           } else {
             $package = Invoke-RestMethod 'https://thunderstore.io/api/experimental/package/BiribaMods/CombatMeter/'
             if ([version]$env:RELEASE_VERSION -le [version]$package.latest.version_number) { throw 'Release must be newer than the latest Thunderstore version.' }
-            ./.tools/tcli/tcli.exe publish --config-path thunderstore.toml --file $zip --package-version $env:RELEASE_VERSION
+            ./.tools/tcli/tcli.exe publish --config-path thunderstore.toml --file $zip
             if ($LASTEXITCODE -ne 0) { throw 'Thunderstore publication failed.' }
             $published = Invoke-RestMethod "https://thunderstore.io/api/experimental/package/BiribaMods/CombatMeter/$env:RELEASE_VERSION/"
             if ($published.version_number -ne $env:RELEASE_VERSION) { throw 'Could not verify published version.' }
